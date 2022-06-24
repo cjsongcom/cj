@@ -1,0 +1,30 @@
+
+#ifndef _CJSCH_H_
+#define _CJSCH_H_
+
+#include <cj/cjsch/cjsch_def.h>
+
+
+typedef cjmc                cjsch_ch;
+
+
+enum {
+	CJ_MAX_CJSCH_TRIGGER_NAME = 64,
+	CJ_MAX_CJSCH_ACTION_NAME = 64,
+
+	CJ_MAX_CJSCH_CLASS_NAME = 32,
+
+	CJ_MAX_CJSCH_ACTOR_PROG_PATH = CJ_MAX_PATH,
+	CJ_MAX_CJSCH_ACTOR_PROG_ARG = CJ_MAX_PATH,
+
+	CJ_MAX_CJSCH_ACTOR_MAIL_ADDR = 128,
+
+	CJ_MAX_CJSCH_ACTOR_MSG_TEXT = 512,
+
+	CJ_MAX_CJSCH_ACTOR_FUNCTOR_ARG = 512
+
+};
+
+
+
+#endif
