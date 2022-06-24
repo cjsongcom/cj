@@ -8,14 +8,14 @@ CJEXTERNC static cjbool _cjhash_new_ex(cjhash* out_hash, cjhash_pair_type type,
 	cjhash_remover_fn remover, cjbool is_placed, cjsiz_t key_siz, cjsiz_t val_siz);
 
 
-CJEXTERNC inline void cjhash_remover_str_ptr(void* _pair) {
-	cjhash_pair* pair = _pair;
-
-	cjassert(pair->key_siz != 0);
-
-	cjmfree(pair->key);
-	pair->key = cjNULL;
+CJEXTERNC void* cjhash_malloc(cjsiz siz) {
+	return cjmzalloc(siz);
 }
+
+CJEXTERNC void cjhash_mfree(void* p) {
+	cjmfree(p);
+}
+
 
 inline cjbool _cjhash_is_ptr_key(cjhash* hash) {
 
@@ -34,10 +34,25 @@ inline cjbool _cjhash_is_str_key(cjhash* hash) {
 	return cjtrue;
 }
 
+CJEXTERNC void cjhash_set_func(cjhash* hash, cjhash_hasher_fn hasher,
+	cjhash_cmp_fn cmp, cjhash_remover_fn remover) {
+
+	if (!hash)
+		return;
+
+	if (hasher)
+		hash->hasher = hasher;
+
+	if (cmp)
+		hash->cmp = cmp;
+
+	if (remover)
+		hash->remover = remover;
+}
 
 CJEXTERNC cjbool cjhash_new_ptr_ptr(cjhash** out_hash, cjhash_siz bucket_siz) {
 
-	cjhash* hash = cjmzalloc(sizeof(cjhash));
+	cjhash* hash = cjhash_malloc(sizeof(cjhash));
 
 	return _cjhash_new_ex(hash, CJPAIR_TYPE_PTR_PTR, bucket_siz,
 		cjhash_ptr_hasher, cjhash_ptr_cmp, cjhash_remover_default, cjfalse, 0, 0);
@@ -53,13 +68,13 @@ CJEXTERNC cjbool cjhash_new_ptr_ptr_placed(cjhash* out_hash, cjhash_siz bucket_s
 
 CJEXTERNC cjbool cjhash_new_strptr_ptr(cjhash** out_hash, cjhash_siz bucket_siz) {
 
-	cjhash* hash = cjmzalloc(sizeof(cjhash));
+	cjhash* hash = cjhash_malloc(sizeof(cjhash));
 
 	cjbool rst = _cjhash_new_ex(hash, CJPAIR_TYPE_STRPTR_PTR, bucket_siz,
 		cjhash_mbcs_hasher, cjhash_mbcs_cmp, cjhash_remover_default, cjfalse, 0, 0);
 
 	if (!rst) {
-		cjmfree(hash);
+		cjhash_mfree(hash);
 
 		return cjfalse;
 	}
@@ -80,13 +95,13 @@ CJEXTERNC cjbool cjhash_new_strptr_ptr_placed(cjhash* out_hash, cjhash_siz bucke
 
 CJEXTERNC cjbool cjhash_new_str_ptr(cjhash** out_hash, cjhash_siz bucket_siz) {
 
-	cjhash* hash = cjmzalloc(sizeof(cjhash));
+	cjhash* hash = cjhash_malloc(sizeof(cjhash));
 
 	cjbool rst = _cjhash_new_ex(hash, CJPAIR_TYPE_STR_PTR, bucket_siz,
 		cjhash_mbcs_hasher, cjhash_mbcs_cmp, cjhash_remover_str_ptr, cjfalse, 0, 0);
 
 	if (!rst) {
-		cjmfree(hash);
+		cjhash_mfree(hash);
 
 		return cjfalse;
 	}
@@ -104,7 +119,6 @@ CJEXTERNC cjbool cjhash_new_str_ptr_placed(cjhash* out_hash, cjhash_siz bucket_s
 		cjhash_mbcs_hasher, cjhash_mbcs_cmp, cjhash_remover_str_ptr, cjtrue, 0, 0);
 }
 
-
 CJEXTERNC cjbool _cjhash_new_ex(cjhash* out_hash, cjhash_pair_type type,
 	cjhash_siz bucket_siz, cjhash_hasher_fn hasher, cjhash_cmp_fn cmp, 
 	cjhash_remover_fn remover, cjbool is_placed, cjsiz_t key_siz, cjsiz_t val_siz) {
@@ -114,7 +128,7 @@ CJEXTERNC cjbool _cjhash_new_ex(cjhash* out_hash, cjhash_pair_type type,
 
 	out_hash->type = type;
 
-	out_hash->bucket = cjmzalloc(sizeof(void*) * bucket_siz);
+	out_hash->bucket = cjhash_malloc(sizeof(void*) * bucket_siz);
 	out_hash->bucket_siz = bucket_siz;
 
 	out_hash->hasher = hasher;
@@ -136,10 +150,10 @@ CJEXTERNC void cjhash_del(cjhash* hash) {
 
 	cjhash_clear(hash);
 
-	cjmfree(hash->bucket);
+	cjhash_mfree(hash->bucket);
 	
 	if(!hash->is_placed)
-		cjmfree(hash);
+		cjhash_mfree(hash);
 }
 
 CJEXTERNC void cjhash_clear(cjhash* hash) {
@@ -155,13 +169,13 @@ CJEXTERNC void cjhash_clear(cjhash* hash) {
 		if (pair) {
 			hash->remover(pair);
 
-			if (hash->type == CJPAIR_TYPE_STR_PTR && pair->key) {
-				// hash->remover(pair) will set pair->key to zero
-				;
-				cjassert(!pair->key);
-			}
+			//if (hash->type == CJPAIR_TYPE_STR_PTR) {
+			//	// hash->remover(pair) will set pair->key to zero
+			//	;
+			//	//cjassert(!pair->key);
+			//}
 
-			cjmfree(pair);
+			cjhash_mfree(pair);
 		}
 	}
 
@@ -209,7 +223,7 @@ CJEXTERNC inline static cjhash_pair* _cjhash_lookup_pair(cjhash* hash,
 	return cjNULL;
 }
 
-CJEXTERNC cjhash_pair* cjhash_find(cjhash* hash, void* key) {
+CJEXTERNC cjhash_pair* cjhash_find(cjhash* hash, const void* key) {
 
 	if (!hash)
 		return cjNULL;
@@ -262,18 +276,19 @@ CJEXTERNC cjhash_pair* cjhash_push_ptr_ptr(cjhash* hash, void* ptr_key, void* pt
 
 		} else {
 			// add new pair at end of pair in current bucket
-			new_pair = cjmzalloc(sizeof(cjhash_pair));
+			new_pair = cjhash_malloc(sizeof(cjhash_pair));
 
 			cjassert(!pair->_next);
 			pair->_next = new_pair;
 		}
 
 	} else {
-		new_pair = cjmzalloc(sizeof(cjhash_pair));
+		new_pair = cjhash_malloc(sizeof(cjhash_pair));
 		bucket[hash_val] = new_pair;
 	}
 
 	if (new_pair) {
+		new_pair->type = hash->type;
 		new_pair->key = ptr_key;
 		new_pair->val = ptr_val;
 
@@ -310,21 +325,22 @@ CJEXTERNC cjhash_pair* cjhash_push_str_ptr(cjhash* hash, const cjmc* str_key, vo
 
 		} else {
 			// add new pair at end of pair in current bucket
-			new_pair = cjmzalloc(sizeof(cjhash_pair));
+			new_pair = cjhash_malloc(sizeof(cjhash_pair));
 			cjassert(!pair->_next);
 			pair->_next = new_pair;
 		}
 
 	} else {
-		new_pair = cjmzalloc(sizeof(cjhash_pair));
+		new_pair = cjhash_malloc(sizeof(cjhash_pair));
 		bucket[hash_val] = new_pair;
 	}
 
 	if (new_pair) {
 		cjsiz key_siz = sizeof(cjmc) * (cjstrlen(str_key) + 1);
 
+		new_pair->type = hash->type;
 		new_pair->key_siz = key_siz;
-		new_pair->key = cjmzalloc(key_siz);
+		new_pair->key = cjhash_malloc(key_siz);
 		cjstrcpy_s(new_pair->key, key_siz / sizeof(cjmc), str_key);
 
 		new_pair->val = ptr_val;
@@ -357,7 +373,7 @@ CJEXTERNC static void _cjhash_inner_delete(cjhash* hash, cjhash_pair* prev,
 	}
 
 	hash->remover(del);
-	cjmfree(del);
+	cjhash_mfree(del);
 
 	hash->pair_cnt--;
 	cjassert(hash->pair_cnt > 0);

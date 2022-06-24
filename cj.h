@@ -326,7 +326,9 @@ typedef std::vector<cjpstring>	    cjpstring_ary;
 #endif
 
 #include <cj/cj_mem.h>
+
 #include <cj/cjary.h>
+
 
 #include <cj/cjtime.h>
 #include <cj/cjthread.h>
@@ -334,13 +336,6 @@ typedef std::vector<cjpstring>	    cjpstring_ary;
 
 #include <cj/cj_string.h>
 #include <cj/cj_ch_conv.h>
-
-#include <cj/cjfile.h>
-#include <cj/cj_log.h>
-
-#include <cj/cj_ymd.h>
-#include <cj/cjdatetime.h>
-
 
 typedef enum cjpair_type_t {
 
@@ -350,31 +345,38 @@ typedef enum cjpair_type_t {
 	// key="key"			val=void*
 	CJPAIR_TYPE_STRPTR_PTR,
 
-	
+
 	// key=cjmc[]			val=void*
 	CJPAIR_TYPE_STR_PTR = 100,
 
 } cjpair_type;
-
 
 typedef struct cjpair_t cjpair;
 
 typedef struct cjpair_t {
 
 	cjpair_type					type;
-	cjpair*						_next;
+	cjpair* _next;
 
-	cjpair*						_seq_prev;
-	cjpair*						_seq_next;
+	cjpair* _seq_prev;
+	cjpair* _seq_next;
 
-	void*						key;
+	void* key;
 	cjsiz						key_siz;
 
-	void*						val;
+	void* val;
 	cjsiz						val_siz;
 
 } cjpair;
 
+#include <cj/cjhash.h>
+
+
+#include <cj/cjfile.h>
+#include <cj/cj_log.h>
+
+#include <cj/cj_ymd.h>
+#include <cj/cjdatetime.h>
 
 
 #include <cj/cj_json.h>

@@ -607,9 +607,44 @@ CJEXTERNC static cjbool _cjsch_parse_json_sch_actions(cjsch_parse_json_sch_ctx* 
 	return cjtrue;
 }
 
+CJEXTERNC cjbool cjsch_init_parse_json_sch_ctx(cjsch_parse_json_sch_ctx* ctx) {
+
+	if (!ctx)
+		return cjfalse;
+
+	cjary_new_ptr_placed(&ctx->triggers, 2);
+	cjary_new_ptr_placed(&ctx->actions, 2);
+
+	return cjtrue;
+}
+
+CJEXTERNC void cjsch_finalize_parse_json_sch_ctx(cjsch_parse_json_sch_ctx* ctx) {
+
+	if (!ctx)
+		return;
+
+	cjary_idx i;
+	cjary_idx siz;
+
+	siz = cjary_siz(&ctx->triggers);
+
+	for (i = 0; i < siz; i++) {
+		cjsch_trigger* trig = cjary_get_ptr(&ctx->triggers, i);
+		cjsch_trigger_destroy(trig);
+	}
+
+	cjary_del_placed(&ctx->triggers);
 
 
+	siz = cjary_siz(&ctx->actions);
 
+	for (i = 0; i < siz; i++) {
+		cjsch_action* action = cjary_get_ptr(&ctx->actions, i);
+		cjsch_action_destroy(action);
+	}
+
+	cjary_del_placed(&ctx->actions);
+}
 
 
 //

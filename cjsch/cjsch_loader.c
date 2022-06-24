@@ -61,49 +61,6 @@ CJEXTERNC void cjsch_loader_destroy(cjsch_loader* loader) {
 	cjmfree(loader);
 }
 
-
-CJEXTERNC static cjbool _cjsch_init_parse_json_sch_ctx(
-	cjsch_parse_json_sch_ctx* ctx) {
-
-	if (!ctx)
-		return cjfalse;
-
-	cjary_new_ptr_placed(&ctx->triggers, 2);
-	cjary_new_ptr_placed(&ctx->actions, 2);
-
-	return cjtrue;
-}
-
-CJEXTERNC static void _cjsch_finalize_parse_json_sch_ctx(
-	cjsch_parse_json_sch_ctx* ctx) {
-
-	if (!ctx)
-		return;
-
-	cjary_idx i;
-	cjary_idx siz;
-
-	siz = cjary_siz(&ctx->triggers);
-
-	for (i = 0; i < siz; i++) {
-		cjsch_trigger* trig = cjary_get_ptr(&ctx->triggers, i);
-		cjsch_trigger_destroy(trig);
-	}
-
-	cjary_del_placed(&ctx->triggers);
-
-
-	siz = cjary_siz(&ctx->actions);
-
-	for (i = 0; i < siz; i++) {
-		cjsch_action* action = cjary_get_ptr(&ctx->actions, i);
-		cjsch_action_destroy(action);
-	}
-
-	cjary_del_placed(&ctx->actions);
-
-}
-
 CJEXTERNC cjbool cjsch_loader_load(cjsch_loader* loader) {
 	
 	if (!loader)
@@ -117,12 +74,12 @@ CJEXTERNC cjbool cjsch_loader_load(cjsch_loader* loader) {
 	cjsch_parse_err parse_err = CJSCH_PARSE_ERR_OK;
 	const cjmc* parse_err_msg = cjNULL;
 
-	if (!_cjsch_init_parse_json_sch_ctx(&ctx)) {		
+	if (!cjsch_init_parse_json_sch_ctx(&ctx)) {		
 		return cjfalse;
 	}
 
 	if (!cjsch_parse_json_sch(&ctx, loader->sch_json, &parse_err, &parse_err_msg)) {
-		_cjsch_finalize_parse_json_sch_ctx(&ctx);
+		cjsch_finalize_parse_json_sch_ctx(&ctx);
 		return cjfalse;
 	}
 

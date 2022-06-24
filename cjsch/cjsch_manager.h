@@ -3,6 +3,8 @@
 #define _CJSCH_MANAGER_H_
 
 
+typedef struct cjsch_factory_t			cjsch_factory;
+
 typedef struct cjsch_manager_t {
 
 	// cjsch_trigger_inst
@@ -10,6 +12,8 @@ typedef struct cjsch_manager_t {
 
 	// cjsch_action_inst
 	cjary				action_insts;
+
+	cjsch_factory*		sch_factory;
 
 } cjsch_manager;
 

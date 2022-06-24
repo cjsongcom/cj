@@ -35,8 +35,8 @@ typedef enum cjsch_parse_err_t {
 CJEXTERNC cjbool cjsch_parse_json_sch(cjsch_parse_json_sch_ctx* ctx,
 	cjson* json, cjsch_parse_err* out_err, const cjmc** out_err_msg);
 
-
-
+CJEXTERNC cjbool cjsch_init_parse_json_sch_ctx(cjsch_parse_json_sch_ctx* ctx);
+CJEXTERNC void cjsch_finalize_parse_json_sch_ctx(cjsch_parse_json_sch_ctx* ctx);
 
 #endif
 
