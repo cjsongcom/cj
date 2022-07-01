@@ -328,7 +328,7 @@ typedef std::vector<cjpstring>	    cjpstring_ary;
 #include <cj/cj_mem.h>
 
 #include <cj/cjary.h>
-
+#include <cj/cjlist.h>
 
 #include <cj/cjtime.h>
 #include <cj/cjthread.h>

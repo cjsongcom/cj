@@ -2,8 +2,6 @@
 #ifndef _CJSCH_ACTION_H_
 #define _CJSCH_ACTION_H_
 
-#include <cj/cjsch/cjsch_def.h>
-
 
 typedef struct cjsch_action_setting_t {
 

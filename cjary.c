@@ -177,6 +177,7 @@ CJEXTERNC cjbool cjary_push_ptr(cjary* ary, void* p)     {
     if (!ary->is_ptr_ary)
         return cjfalse;
 
+    // check maximum capacity
     if (ary->data) {
         if (ary->capacity == ary->siz) {
             if (-1 == cjary_resize(ary, ary->capacity * 2))
@@ -200,6 +201,7 @@ CJEXTERNC cjbool cjary_push_val(cjary* ary, void* val) {
     if (ary->is_ptr_ary)
         return cjfalse;
 
+    // check maximum capacity
     if (ary->data) {
         if (ary->capacity == ary->siz) {
             if (-1 == cjary_resize(ary, ary->capacity * 2))

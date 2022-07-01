@@ -45,8 +45,9 @@ typedef struct cjsch_trigger_advance_t {
 } cjsch_trigger_advance;
 
 
-typedef struct cjsch_trigger_t {
+typedef struct cjsch_trigger_t cjsch_trigger;
 
+typedef struct cjsch_trigger_t {
     cjsch_ch                        name[CJ_MAX_CJSCH_TRIGGER_NAME];
     cjsch_ch                        class[CJ_MAX_CJSCH_CLASS_NAME];
 

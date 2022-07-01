@@ -132,6 +132,7 @@ CJEXTERNC static cjrst cjtest_cjsch_factory_load_trigger_action() {
 	// destroy
 	//
 
+	cjson_destroy(sch_json);
 	cjsch_factory_destroy(f);
 
 	cjstd_printf("\n");
